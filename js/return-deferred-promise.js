@@ -99,7 +99,7 @@ $( document ).ready( function(){
 
 	// Main function add some boxes
 	console.log ( 'adding boxes...' );
-	for( x = 0; x < _.random( 3, 4 ); x++ ){
+	for( x = 0; x < _.random( 3, 10 ); x++ ){
 		deferredBox = addDeferredBox();
 		if ( 'undefined' === typeof allThePromises ) {
 			allThePromises = $.when( deferredBox );
