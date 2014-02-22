@@ -10,10 +10,35 @@ $( document ).ready( function(){
 				return _.random( 0, 9 ) * 50;
 	};
 
+	function startTimer() {
+		var deferred = $.Deferred();
+
+		setTimeout( function(){ tickTimer( deferred ); }, 1000 );
+		return deferred;
+	}
+
+	function tickTimer( deferred ) {
+		var $remaining = $( '.remaining' ),
+			remaining = $remaining.text();
+
+		if ( 'resolved' === allThePromises.state() ){
+			return;
+		}
+
+		if ( remaining > 0 ){
+			remaining--;
+			$remaining.text( remaining );
+			setTimeout( function(){ tickTimer( deferred ); }, 1000 );
+		}
+		if ( 0 === remaining ){
+			deferred.reject(); // Game over!
+		}
+	}
+
 	function addDeferredBox(){
 		var thisBox, horizontalPlusorminus, verticalPlusorminus, newColor, position, moving = false,
-			deferred = $.Deferred(), percentComplete,
-			key = _.random( 1111111111111, 9999999999999 );
+			percentComplete,
+			deferred = $.Deferred(), key = _.random( 1111111111111, 9999999999999 );
 
 		$( '.inside' ).append( '<a href="#" class="deferred-box ' + key + '" style="left:' + randomPosition() +
 								'px; top: ' + randomPosition() + 'px;"></a>' );
@@ -74,7 +99,7 @@ $( document ).ready( function(){
 
 	// Main function add some boxes
 	console.log ( 'adding boxes...' );
-	for( x = 0; x < _.random( 3, 10 ); x++ ){
+	for( x = 0; x < _.random( 3, 4 ); x++ ){
 		deferredBox = addDeferredBox();
 		if ( 'undefined' === typeof allThePromises ) {
 			allThePromises = $.when( deferredBox );
@@ -82,20 +107,27 @@ $( document ).ready( function(){
 			allThePromises = $.when( deferredBox, allThePromises );
 		}
 	}
+	console.log ( 'starting timer...' );
+
+	// Start the timer
+	deferred = startTimer();
+	deferred.fail( function(){
+			console.log( 'Game over, you loose!' );
+		});
+
 
 	allThePromises.then(
-		// done
+		// done - you win
 		function(){
-			console.log( 'finished!' );
+			console.log( 'You Win!' );
 			$( '.progress-complete' ).css( 'background-color', '#f00' );
 		},
 		// fail
+		function(){},
+		// progress - you are progressing
 		function(){
-
-		},
-		// progress
-		function(){
-			$( '.progress-complete' ).css( 'width', percentComplete );
+			console.log( 'progress!' );
+			$( '.progress-complete' ).animate( { width: percentComplete()  }, 500 );
 		}
 	);
 

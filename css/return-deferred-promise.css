@@ -28,3 +28,14 @@
 	height: 5px;
 	width: 0%;
 }
+.timer {
+	z-index: 200;
+	width: auto;
+	height: 20px;
+	line-height: 20px;
+	position: absolute;
+	font-size: 12px;
+	font-family: Arial;
+	background-color: #fff;
+	padding: 2px;
+}
